@@ -22,7 +22,10 @@ const port = process.env.PORT || 4000;
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+  origin: [
+    'http://localhost:3000',
+    'https://crm-interno-kyon-production.up.railway.app'
+  ],
   credentials: true
 }));
 app.use(express.json());
