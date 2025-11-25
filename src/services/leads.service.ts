@@ -4,25 +4,30 @@ import { Lead } from '../types';
 // Conversão entre snake_case (DB) e camelCase (API)
 const toSnakeCase = (obj: any): any => {
   if (!obj) return obj;
-  const converted: any = { ...obj };
-  if (obj.callDate) converted.call_date = obj.callDate;
-  if (obj.clientName) converted.client_name = obj.clientName;
-  if (obj.companyName) converted.company_name = obj.companyName;
-  if (obj.meetingStage) converted.meeting_stage = obj.meetingStage;
-  if (obj.dealStatus) converted.deal_status = obj.dealStatus;
+  const converted: any = {};
+  
+  // Só adiciona os campos que existem no objeto original
+  if (obj.callDate !== undefined) converted.call_date = obj.callDate;
+  if (obj.owner !== undefined) converted.owner = obj.owner;
+  if (obj.clientName !== undefined) converted.client_name = obj.clientName;
+  if (obj.companyName !== undefined) converted.company_name = obj.companyName;
+  if (obj.phone !== undefined) converted.phone = obj.phone;
+  if (obj.meetingStage !== undefined) converted.meeting_stage = obj.meetingStage;
+  if (obj.dealStatus !== undefined) converted.deal_status = obj.dealStatus;
   if (obj.clientRevenue !== undefined) converted.client_revenue = obj.clientRevenue;
-  if (obj.partnerParticipated) converted.partner_participated = obj.partnerParticipated;
+  if (obj.partnerParticipated !== undefined) converted.partner_participated = obj.partnerParticipated;
   if (obj.proposalSent !== undefined) converted.proposal_sent = obj.proposalSent;
-  if (obj.planOfInterest) converted.plan_of_interest = obj.planOfInterest;
+  if (obj.planOfInterest !== undefined) converted.plan_of_interest = obj.planOfInterest;
   if (obj.proposedValue !== undefined) converted.proposed_value = obj.proposedValue;
   if (obj.closedValue !== undefined) converted.closed_value = obj.closedValue;
-  if (obj.mainObjection) converted.main_objection = obj.mainObjection;
-  if (obj.sdrName) converted.sdr_name = obj.sdrName;
+  if (obj.mainObjection !== undefined) converted.main_objection = obj.mainObjection;
+  if (obj.sdrName !== undefined) converted.sdr_name = obj.sdrName;
   if (obj.downPaymentMade !== undefined) converted.down_payment_made = obj.downPaymentMade;
   if (obj.downPaymentValue !== undefined) converted.down_payment_value = obj.downPaymentValue;
-  if (obj.utmSource) converted.utm_source = obj.utmSource;
-  if (obj.createdAt) converted.created_at = obj.createdAt;
-  if (obj.updatedAt) converted.updated_at = obj.updatedAt;
+  if (obj.utmSource !== undefined) converted.utm_source = obj.utmSource;
+  if (obj.createdAt !== undefined) converted.created_at = obj.createdAt;
+  if (obj.updatedAt !== undefined) converted.updated_at = obj.updatedAt;
+  
   return converted;
 };
 
@@ -98,13 +103,18 @@ export class LeadsService {
 
   async create(lead: Omit<Lead, 'id' | 'createdAt' | 'updatedAt'>): Promise<Lead> {
     const snakeCaseLead = toSnakeCase(lead);
+    console.log('🔄 Dados convertidos para snake_case:', snakeCaseLead);
+    
     const { data, error } = await supabaseAdmin
       .from(this.table)
       .insert([snakeCaseLead])
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Erro do Supabase:', error);
+      throw error;
+    }
     return toCamelCase(data);
   }
 

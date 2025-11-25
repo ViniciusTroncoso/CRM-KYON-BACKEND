@@ -35,9 +35,13 @@ router.get('/:id', async (req: Request, res: Response) => {
 // POST /api/leads - Criar novo lead
 router.post('/', async (req: Request, res: Response) => {
   try {
+    console.log('📝 Recebendo requisição para criar lead:', req.body);
     const lead = await leadsService.create(req.body);
+    console.log('✅ Lead criado com sucesso:', lead);
     res.status(201).json({ success: true, data: lead });
   } catch (error: any) {
+    console.error('❌ Erro ao criar lead:', error.message);
+    console.error('Stack:', error.stack);
     res.status(400).json({ success: false, error: error.message });
   }
 });

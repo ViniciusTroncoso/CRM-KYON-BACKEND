@@ -66,4 +66,20 @@ router.post('/:id/toggle', async (req: Request, res: Response) => {
   }
 });
 
+// PATCH /api/team/:id/role - Atualizar role do membro
+router.patch('/:id/role', async (req: Request, res: Response) => {
+  try {
+    const { role } = req.body;
+    
+    if (!role || !['Admin', 'Closer', 'SDR'].includes(role)) {
+      return res.status(400).json({ success: false, error: 'Invalid role' });
+    }
+
+    const member = await teamService.updateRole(req.params.id, role);
+    res.json({ success: true, data: member });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
 export default router;

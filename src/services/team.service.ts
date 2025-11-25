@@ -131,6 +131,21 @@ export class TeamService {
     return this.update(id, { active: !member.active });
   }
 
+  async updateRole(id: string, role: 'Admin' | 'Closer' | 'SDR'): Promise<TeamMember> {
+    // Verificar se é super admin
+    const { data: member } = await supabaseAdmin
+      .from('team_members')
+      .select('is_super_admin')
+      .eq('id', id)
+      .single();
+
+    if (member?.is_super_admin) {
+      throw new Error('Não é possível alterar a função do Super Admin');
+    }
+
+    return this.update(id, { role });
+  }
+
   // Alias para compatibilidade com as rotas
   async delete(id: string): Promise<void> {
     return this.deleteTeamMember(id);
